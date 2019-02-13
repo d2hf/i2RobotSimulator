@@ -49,10 +49,10 @@ class Game:
         self.exit = False
 
     def run(self):
-        image_path = os.path.join("/home/henrique/differential2.jpeg")
+        image_path = os.path.join("differential2.jpeg")
         car_image = pygame.image.load(image_path)
         car = Car(10, 10)
-        objective_path = os.path.join("/home/henrique/flag.png")
+        objective_path = os.path.join("flag.png")
         objective_image = pygame.image.load(objective_path)
         objective = Vector2(272.5, 265.5)
         ppu = 32
@@ -69,7 +69,7 @@ class Game:
                     
                     self.exit = True
                 if event.type == pygame.MOUSEBUTTONUP:
-                    objective += pygame.mouse.get_pos() - objective
+                    objective = pygame.mouse.get_pos()
                     self.screen.blit(objective_image, objective)
                     pygame.display.flip()
                     self.clock.tick(self.ticks)
@@ -126,10 +126,3 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.run()
-
-
-# In[5]:
-
-
-import nltk
-
