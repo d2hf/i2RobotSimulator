@@ -13,6 +13,7 @@ class Display:
 	black = (0, 0, 0)
 	white = (255, 255, 255)
 	gray = (211, 211, 211)
+	red = (255, 0, 0)
 
 	def __init__(self):
 		# Ininialização do PyGame
@@ -58,7 +59,7 @@ class Display:
 		self.message_display(text, x + 90, y + 40, 20)
 
 	def text_objects(self, text, font):
-		self.textSurface = font.render(text, True, self.gray)
+		self.textSurface = font.render(text, True, self.red)
 		return self.textSurface, self.textSurface.get_rect()
 
 	def message_display(self, text, x, y, size):
