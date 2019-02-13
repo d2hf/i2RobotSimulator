@@ -2,38 +2,59 @@
 import os
 import pygame
 from math import tan, radians, degrees, copysign
+import math
 import numpy as np
-from cinematica import *
 from pygame.math import Vector2
 
 
 class Car:
-    def __init__(self, x, y, angle=0, length=15,radius=10):
+    def __init__(self, x, y, angle=0, length=20,radius=10):
         self.x= x
         self.y= y
         self.position = np.array([x, y])
         self.angle = angle
         self.length = length
         self.radius= radius
-        self.max_velocity = 0.1
+        self.max_velocity = 0.13
+
         self.tip = [self.x + self.length * math.cos(self.angle), self.y + self.length * math.sin(self.angle)]
         self.bottom = [self.x - self.length * math.cos(self.angle), self.y - self.length * math.sin(self.angle)]
         self.bottom_l = [self.bottom[0] - self.radius * math.sin(self.angle), self.bottom[1] + self.radius * math.cos(self.angle)]
         self.bottom_r = [self.bottom[0] + self.radius * math.sin(self.angle), self.bottom[1] - self.radius * math.cos(self.angle)]
 
-    def go_to_goal(self,objetivo):
-        kp=0.001
-        print('distx: ',objetivo[0]-self.x,'\nx1: ',objetivo[0],
-        '\nx2: ',self.x)
-        theta_r = math.atan2(objetivo[0]-self.x,objetivo[1]-self.y)
-        delta_theta= theta_r - self.angle
-        omega=  delta_theta * kp
+    def go_to_goal(self,theta_a,sum_theta,kp=0.01,ki=0.000001,kd=0.000001):
+        x_dis= self.goal_x - self.x
+        y_dis= self.goal_y - self.y
+        euc_dis= (x_dis**2 + y_dis**2)**(1/2)
+        print(euc_dis)
 
-    def update(self, objetivo):
-        [v,w]=go_to_goal(objetivo[0],self.position[0],
-        objetivo[1],self.position[1],self.angle,self.length,
-        self.radius,self.max_velocity)
-        return [v,w]
+        theta_r = math.atan2(y_dis, x_dis)
+        delta_theta= theta_r - self.angle
+        omega = kp*math.atan2(math.sin(delta_theta),math.cos(delta_theta)) + sum_theta * ki + (self.angle - theta_a)*kd
+
+        if delta_theta <0:
+            vr= self.max_velocity
+            vl= vr - (omega*self.length)/self.radius
+            v= ((vr+vl)/2)*self.radius
+
+        elif delta_theta>0:
+            vl= self.max_velocity
+            vr=  vl+(omega*self.length)/self.radius
+            v= ((vr+vl)/2)*self.radius
+
+        else:
+            v= self.max_velocity
+            w=0
+
+        if euc_dis < 70:
+            v=0
+            w=0
+        return [v, omega]
+
+    def goal(self,objetivo):
+        self.goal_x = objetivo[0]
+        self.goal_y= objetivo[1]
+
 
     def show(self,screen):
         pygame.draw.polygon(screen, (255,0,0), [self.tip, self.bottom_l, self.bottom_r], 0)
@@ -48,6 +69,7 @@ class Game:
         self.exit = False
 
     def run(self):
+
         clock = pygame.time.Clock()
         ticks = pygame.time.get_ticks()
         objective_path = os.path.join("flag.png")
@@ -55,8 +77,11 @@ class Game:
         objective = Vector2(272.5, 265.5)
         self.screen.blit(objective_image, objective)
         pygame.display.flip()
-        car_x=30;car_y=600;car_ang=0
-        i=1
+
+        car_x=500;car_y=50;car_ang=0
+        black_box= {"theta":car_ang,
+                    "theta_a":0,
+                    "sum_theta":0}
 
         while not self.exit:
 
@@ -72,18 +97,24 @@ class Game:
                     print(objective)
 
             self.screen.fill((0, 0, 0))
-            car = Car(car_x, car_y,car_ang)
-            car.show(self.screen)
-            car.go_to_goal(objective)
 
-            [vl,w]= car.update(objective)
+            car = Car(car_x, car_y,car_ang)
+            car.goal(objective)
+
+            car.show(self.screen)
+
+            [vl,w]= car.go_to_goal(black_box["theta_a"],black_box["sum_theta"])
             car_x+=vl*math.cos(car.angle)
             car_y+=vl*math.sin(car.angle)
             car_ang += w
 
+            black_box["theta_a"]= black_box["theta"]
+            black_box["sum_theta"]+=black_box["theta"]
+            black_box["theta"]=car_ang
+
             self.screen.blit(objective_image, objective)
             pygame.display.flip()
-            clock.tick(300)
+            clock.tick(1000)
         pygame.quit()
 
 
