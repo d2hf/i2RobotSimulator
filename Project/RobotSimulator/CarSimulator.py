@@ -15,14 +15,14 @@ class Car:
         self.angle = angle
         self.length = length
         self.radius= radius
-        self.max_velocity = 0.13
+        self.max_velocity = 0.2
 
         self.tip = [self.x + self.length * math.cos(self.angle), self.y + self.length * math.sin(self.angle)]
         self.bottom = [self.x - self.length * math.cos(self.angle), self.y - self.length * math.sin(self.angle)]
         self.bottom_l = [self.bottom[0] - self.radius * math.sin(self.angle), self.bottom[1] + self.radius * math.cos(self.angle)]
         self.bottom_r = [self.bottom[0] + self.radius * math.sin(self.angle), self.bottom[1] - self.radius * math.cos(self.angle)]
 
-    def go_to_goal(self,theta_a,sum_theta,kp=0.01,ki=0.000001,kd=0.000001):
+    def go_to_goal(self,theta_a,sum_theta,kp=0.01,ki=0,kd=0):
         x_dis= self.goal_x - self.x
         y_dis= self.goal_y - self.y
         euc_dis= (x_dis**2 + y_dis**2)**(1/2)
@@ -46,7 +46,7 @@ class Car:
             v= self.max_velocity
             w=0
 
-        if euc_dis < 70:
+        if euc_dis < 50:
             v=0
             w=0
         return [v, omega]
@@ -79,6 +79,7 @@ class Game:
         pygame.display.flip()
 
         car_x=500;car_y=50;car_ang=0
+
         black_box= {"theta":car_ang,
                     "theta_a":0,
                     "sum_theta":0}
