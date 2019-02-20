@@ -22,7 +22,6 @@ class ModeloSimples:
 		x_dis = self.goal_x - self.x
 		y_dis = self.goal_y - self.y
 		euc_dis = (x_dis ** 2 + y_dis ** 2) ** (1 / 2)
-		print(euc_dis)
 
 		theta_r = math.atan2(y_dis, x_dis)
 		delta_theta = theta_r - self.angle

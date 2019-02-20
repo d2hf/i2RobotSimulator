@@ -5,7 +5,7 @@ from math import tan, radians, degrees, copysign
 from Display import Display
 from ModeloSimples import ModeloSimples
 
-class Simulator:
+class SimulatorModeloSimples:
 	display = Display()
 	screen = display.gameDisplay
 	clock = display.clock

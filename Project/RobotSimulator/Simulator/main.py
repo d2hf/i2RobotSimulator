@@ -4,10 +4,10 @@ from pygame.math import Vector2
 from math import tan, radians, degrees, copysign
 from Display import Display
 from ModeloSimples import ModeloSimples
-from Simulator import Simulator
+from SimulatorModeloSimples import SimulatorModeloSimples
 
 display = Display()
-simulator = Simulator()
+simulatorModeloSimples = SimulatorModeloSimples()
 mouse = pygame.mouse.get_pos()
 
 while True:
@@ -19,12 +19,12 @@ while True:
 		if event.type == pygame.MOUSEBUTTONUP:
 			mouse = pygame.mouse.get_pos()
 			if 200 < mouse[0] < 1920 and 100 < mouse[1] < 1080:
-				simulator.objective = pygame.mouse.get_pos()
-				simulator.screen.blit(simulator.objective_image, simulator.objective)
+				simulatorModeloSimples.objective = pygame.mouse.get_pos()
+				simulatorModeloSimples.screen.blit(simulatorModeloSimples.objective_image, simulatorModeloSimples.objective)
 				pygame.display.flip()
-				simulator.clock.tick(300)
+				simulatorModeloSimples.clock.tick(300)
 
-	simulator.run()
+	simulatorModeloSimples.run()
 	display.menu()
 
 	pygame.display.update()
